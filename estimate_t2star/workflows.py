@@ -4,6 +4,7 @@ import nipype.pipeline.engine as pe
 import nipype.interfaces.fsl as fsl
 import nipype.interfaces.ants as ants
 import nipype.interfaces.utility as util
+import nipype.interfaces.image as image
 
 import os.path
 
@@ -44,7 +45,7 @@ class EstimateT2Star(base.BaseInterface):
 
         return outputs
 
-def create_t2star_workflow(scan_directory, te, patient_id=None, scan_id=None, num_threads=1):
+def create_t2star_workflow(scan_directory, te, patient_id=None, scan_id=None, reorient='RAS', num_threads=1):
     name = 't2_star'
 
     if patient_id is not None and scan_id is not None:
@@ -56,11 +57,21 @@ def create_t2star_workflow(scan_directory, te, patient_id=None, scan_id=None, nu
     input_node = pe.Node(util.IdentityInterface(['t2star_files', 'target_file', 'brainmask_file']), name='input_node')
 
     num_t2star_files = len(input_node.outputs.t2star_files)
-    #
+
+    # Reorient
+    if reorient is not None:
+        reorient_to_target = pe.MapNode(image.Reorient(), iterfield=['in_file'], name='reorient_to_target')
+        reorient_to_target.inputs.orientation = reorient
+        wf.connect(input_node, 't2star_files', reorient_to_target, 'in_file')
+
     select_first_t2star = pe.Node(util.Split(), name='get_first_t2star')
     select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
     select_first_t2star.inputs.squeeze = True
-    wf.connect(input_node, 't2star_files', select_first_t2star, 'inlist')
+
+    if reorient is not None:
+        wf.connect(reorient_to_target, 'out_file', select_first_t2star, 'inlist')
+    else:
+        wf.connect(input_node, 't2star_files', select_first_t2star, 'inlist')
 
     affine_reg_to_target = pe.Node(ants.Registration(), name='affine_reg_to_target')
     affine_reg_to_target.inputs.dimension = 3
