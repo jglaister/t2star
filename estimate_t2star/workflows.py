@@ -1,7 +1,6 @@
 import os
 
 import nipype.pipeline.engine as pe
-import nipype.interfaces.fsl as fsl
 import nipype.interfaces.ants as ants
 import nipype.interfaces.utility as util
 import nipype.interfaces.image as image
@@ -45,7 +44,21 @@ class EstimateT2Star(base.BaseInterface):
 
         return outputs
 
-def create_t2star_workflow(scan_directory, te, patient_id=None, scan_id=None, reorient='RAS', num_threads=1):
+
+def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAS',
+                           num_threads: int = 1) -> pe.Workflow:
+    '''
+    Registers and estimates t2star map
+    :param scan_directory:
+    :param te:
+    :param patient_id:
+    :param scan_id:
+    :param reorient:
+    :param num_threads:
+    :return: A :class:'nipype.pipeline.engine.Workflow' object
+    :rtype: nipype.pipeline.engine.Workflow
+    '''
+
     name = 't2_star'
 
     if patient_id is not None and scan_id is not None:

@@ -10,8 +10,10 @@ from multiprocessing import Pool
 def fun_exp(coeffs, y, te):
     return y - model(te, coeffs)
 
+
 def model(te, coeffs):
     return coeffs[0] * np.exp(-te * coeffs[1])
+
 
 def fit_nls(data, S0, T2, TE):
     S0_final = np.zeros_like(S0)
@@ -28,9 +30,11 @@ def fit_nls(data, S0, T2, TE):
 
     return S0_final, invT2_final, R2_final
 
+
 def _fit_nls_helper(args):
     x, TE = args
     return fit_nls(x[0], x[1], x[2], TE)
+
 
 def fit_nls_by_multiprocessing(data, S0, T2, TE, workers):
     pool = Pool(processes=workers)

@@ -1,0 +1,45 @@
+#! /usr/bin/env python
+import argparse
+import os
+from glob import glob
+
+from estimate_t2star.workflows import create_t2star_workflow
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--scan-directory', type=str, default=os.getcwd())
+    parser.add_argument('-p', '--patient-id', type=str)
+    parser.add_argument('-s', '--scan-id', type=str)
+    parser.add_argument('--t2star_prefix', type=str, required=True)
+    parser.add_argument('-tf', '--target_file', type=str, required=True)
+    parser.add_argument('-bm', '--brainmask-file', type=str, required=True)
+    parser.add_argument('-te', nargs='+', type=float, required=True)
+    parser.add_argument('-t', '--num_threads', type=int, default=1)
+    args = parser.parse_args()
+
+    #Find scans
+    t2star_path = os.path.abspath(os.path.expanduser(args.t2star_prefix))
+    t2star_files = glob(t2star_path + '*.nii.gz')
+
+    if len(t2star_files) is not len(args.te):
+        raise ValueError('Number of t2star scans and length of TE list should be same')
+
+    for argname in ['target_file', 'brainmask_file']:
+        if getattr(args, argname) is not None:
+            setattr(args, argname, os.path.abspath(os.path.expanduser(getattr(args, argname))))
+
+    wf = create_t2star_workflow(args.scan_directory, args.te, args.patient_id, args.scan_id, args.reorient,
+                                args.num_threads)
+
+    for argname in ['target_file', 'brainmask_file']:
+        if getattr(args, argname) is not None:
+            setattr(wf.inputs.input_node, argname, getattr(args, argname))
+
+    wf.inputs.input_node.t2star_files = t2star_files
+
+    if args.num_threads == 1:
+        wf.run()
+    else:
+        wf.run(plugin='MultiProc', plugin_args={'n_procs': args.num_threads})
+
+
