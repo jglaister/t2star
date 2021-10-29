@@ -8,7 +8,8 @@ from multiprocessing import Pool
 
 # Define fun_exp and model for later functions
 
-
+#    parser.add_argument('--reorient', choices=[None, 'RAS', 'LAS', 'RPS', 'LPS', 'RAI', 'LAI', 'RPI', 'LPI'],
+#                        default='RAS', help='Reorient T2 images to specified orientation before registering')
 def _fun_exp(coeffs, y, te):
     return y - _model(te, coeffs)
 
