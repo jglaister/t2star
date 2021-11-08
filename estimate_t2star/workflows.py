@@ -95,7 +95,7 @@ def create_mtr_workflow(scan_directory: str, te, patient_id: str = None, scan_id
     :rtype: nipype.pipeline.engine.Workflow
     '''
 
-    name = 't2_star'
+    name = 'mtr'
 
     if patient_id is not None and scan_id is not None:
         scan_directory = os.path.join(scan_directory, patient_id, 'pipeline')

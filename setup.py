@@ -18,5 +18,5 @@ args = dict(
 )
 
 setup(install_requires=['nipype', 'numpy', 'nibabel', 'scipy', 'sklearn'],
-      packages=['estimate_t2star.estimate_t2star', 'estimate_t2star.workflows'],
+      packages=['estimate_t2star'],
       scripts=glob('bin/*'), **args)
