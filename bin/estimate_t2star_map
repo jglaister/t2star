@@ -15,7 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('-bm', '--brainmask-file', type=str, required=True)
     parser.add_argument('-te', nargs='+', type=float, required=True)
     parser.add_argument('--reorient', choices=[None, 'RAS', 'LAS', 'RPS', 'LPS', 'RAI', 'LAI', 'RPI', 'LPI'], 
-                        default='RAS', help='Reorient T2 images to specified orientation before registering')
+                        default='RAI', help='Reorient T2 images to specified orientation before registering')
     parser.add_argument('-t', '--num_threads', type=int, default=1)
     args = parser.parse_args()
 

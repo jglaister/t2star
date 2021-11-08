@@ -216,7 +216,9 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     input_node = pe.Node(util.IdentityInterface(['t2star_files', 'target_file', 'brainmask_file']), name='input_node')
 
     num_t2star_files = len(input_node.outputs.t2star_files)
-
+    print(num_t2star_files)
+    print(input_node.inputs.t2star_files)
+        
     # Reorient
     if reorient is not None:
         reorient_to_target = pe.MapNode(image.Reorient(), iterfield=['in_file'], name='reorient_to_target')
