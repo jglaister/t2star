@@ -100,7 +100,7 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     data_e1 = data_raw_e1.get_fdata()
 
     # Create empty array to store all echos
-    data = np.zeros(data_e1.shape + (num_echos,))
+    data = np.zeros(data_e1.shape[0:3] + (num_echos,))
     print(data.shape)
     data_shape = data.shape
     data[:, :, :, 0] = data_e1
