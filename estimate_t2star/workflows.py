@@ -116,6 +116,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
 
     #mtfile_node = pe.Node(util.Function(input_names=["mton_files", "mtoff_files"], output_names=["mton_filed", "mtoff_filed"], function=identity), name='mtfile_node')
     mtfile_node = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mtfile_node')
+    
     if split_mton_flag:
         split_mt = pe.Node(fsl.Split(), 'split_mt')
         split_mt.inputs.dimension = 't'
@@ -126,11 +127,11 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
         split_mt_files.inputs.squeeze = True
         wf.connect(split_mt, 'out_files', split_mt_files, 'inlist')
     
-        wf.connect(split_mt, 'out1', mt_files, 'mton_file') #TODO: Check if MTON is first
-        wf.connect(split_mt, 'out2', mt_files, 'mtoff_file')
+        wf.connect(split_mt, 'out1', mtfile_node, 'mton_file') #TODO: Check if MTON is first
+        wf.connect(split_mt, 'out2', mtfile_node, 'mtoff_file')
     else:
-        wf.connect(input_node, 'mton_file', mt_files, 'mton_file')
-        wf.connect(input_node, 'mtoff_file', mt_files, 'mtoff_file')
+        wf.connect(input_node, 'mton_file', mtfile_node, 'mton_file')
+        wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_file')
 
     #wf.connect(input_node, 'mton_file', mtfile_node, 'mton_file')
     #wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_file')
