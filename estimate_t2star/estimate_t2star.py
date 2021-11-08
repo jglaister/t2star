@@ -32,7 +32,6 @@ def fit_nls(data, s0, t2, te):
     r2_final = np.zeros_like(t2)
     scale = [np.max(s0), 50]
     for i in range(len(s0)):
-        print(i)
         nls = least_squares(_fun_exp,
                             (s0[i], t2[i]),
                             bounds=([0, 0.2], [np.inf, np.inf]),
@@ -135,21 +134,6 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=None, outp
 
     t2inv_mask[t2inv_mask < 0.5] = 0.5 # np.percentile(invT2_ss,5)
     t2inv_mask[t2inv_mask > np.percentile(t2inv_mask, 95)] = np.percentile(t2inv_mask, 95)
-
-    #By row
-    #S0_ss_final = np.zeros_like(S0_ss)
-    #T2_ss_final = np.zeros_like(T2_ss)
-    #for c in range(n[1]):
-    #    print(c)
-
-    #for i in range(len(S0_ss)):
-    #    if i%1000==0:
-    #        print(i)
-    #    nls = least_squares(fun_exp,(S0_ss[i],T2_ss[i]),method='lm',max_nfev=20,args=(data_flat_ss[i,:],TE))
-    #    S0_ss_final[i] = nls.x[0]
-    #    T2_ss_final[i] = nls.x[1]
-    #S0_ss_final, T2_ss_final = fit_nls(data_flat_ss[0:10,:], S0_ss[0:10], T2_ss[0:10], TE)
-    #scale = np.max(S0_ss)
 
     if num_workers > 1:
         s0_mask, t2inv_mask, r2_mask = fit_nls_by_multiprocessing(data_flat_mask, s0_mask, t2inv_mask, te, num_workers)

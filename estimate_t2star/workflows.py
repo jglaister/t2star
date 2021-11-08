@@ -270,14 +270,14 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     wf.connect(input_node, 'brainmask_file', affine_reg_to_target, 'fixed_image_masks')
 
     # Transform all echoes
-    transform_echoes = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_echoes')
-    transform_echoes.inputs.input_image_type = 3
-    wf.connect(input_node, 'target_file', transform_echoes, 'reference_image')
-    wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
-    if reorient is not None:
-        wf.connect(reorient_to_target, 'out_file', transform_echoes, 'input_image')
-    else:
-        wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
+    #transform_echoes = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_echoes')
+    #transform_echoes.inputs.input_image_type = 3
+    #wf.connect(input_node, 'target_file', transform_echoes, 'reference_image')
+    #wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
+    #if reorient is not None:
+    #    wf.connect(reorient_to_target, 'out_file', transform_echoes, 'input_image')
+    #else:
+    #    wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
 
     # Transform brainmask
     transform_brainmask = pe.Node(ants.ApplyTransforms(), name='transform_brainmask')
@@ -305,18 +305,27 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
         estimate.inputs.output_prefix = patient_id + '_' + scan_id + '_GRE'
     else:
         estimate.inputs.output_prefix = fip.split_filename(select_first_t2star.outputs.out1)[1] + '_GRE'
-
     if reorient is not None:
         wf.connect(reorient_to_target, 'out_file', estimate, 't2star_files')
     else:
         wf.connect(input_node, 't2star_files', estimate, 't2star_files')
     wf.connect(transform_brainmask, 'output_image', estimate, 'brainmask_file')
 
+    transform_t2star = pe.Node(ants.ApplyTransforms(), name='transform_t2star')
+    transform_t2star.inputs.input_image_type = 3
+    wf.connect(estimate, 't2star_file', transform_t2star, 'input_image')
+    wf.connect(input_node, 'target_file', transform_t2star, 'reference_image')
+    wf.connect(affine_reg_to_target, 'composite_transform', transform_t2star, 'transforms')
+
+    transform_s0 = pe.Node(ants.ApplyTransforms(), name='transform_t2star')
+    transform_s0.inputs.input_image_type = 3
+    wf.connect(estimate, 's0_file', transform_s0, 'input_image')
+    wf.connect(input_node, 'target_file', transform_s0, 'reference_image')
+    wf.connect(affine_reg_to_target, 'composite_transform', transform_s0, 'transforms')
 
     #TODO: Copy output to a final folder
-    output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file', 'r2_file']), name='output_node')
-    wf.connect(estimate, 's0_file', output_node, 's0_file')
-    wf.connect(estimate, 't2star_file', output_node, 't2star_file')
-    wf.connect(estimate, 'r2_file', output_node, 'r2_file')
+    output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file']), name='output_node')
+    wf.connect(transform_s0, 'output_image', output_node, 's0_file')
+    wf.connect(transform_t2star, 'output_image', output_node, 't2star_file')
 
     return wf
