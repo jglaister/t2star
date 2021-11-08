@@ -40,9 +40,9 @@ class EstimateT2Star(base.BaseInterface):
 
     def _list_outputs(self):
         outputs = self._outputs().get()
-        outputs['s0_file'] = os.path.abspath(self.inputs.output_prefix + '_GRE_S0.nii.gz')
-        outputs['t2star_file'] = os.path.abspath(self.inputs.output_prefix + '_GRE_T2star.nii.gz')
-        outputs['r2_file'] = os.path.abspath(self.inputs.output_prefix + '_GRE_R2.nii.gz')
+        outputs['s0_file'] = os.path.abspath(self.inputs.output_prefix + '_S0.nii.gz')
+        outputs['t2star_file'] = os.path.abspath(self.inputs.output_prefix + '_T2star.nii.gz')
+        outputs['r2_file'] = os.path.abspath(self.inputs.output_prefix + '_R2.nii.gz')
 
         return outputs
 
@@ -295,9 +295,9 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     estimate.interface.num_threads = num_threads
     estimate.inputs.te_list = te
     if patient_id is not None and scan_id is not None:
-        estimate.inputs.output_prefix = patient_id + '_' + scan_id
+        estimate.inputs.output_prefix = patient_id + '_' + scan_id + '_GRE'
     else:
-        estimate.inputs.output_prefix = fip.split_filename(select_first_t2star.outputs.out1)[1]
+        estimate.inputs.output_prefix = fip.split_filename(select_first_t2star.outputs.out1)[1] + '_GRE'
 
     if reorient is not None:
         wf.connect(reorient_to_target, 'out_file', estimate, 't2star_files')
@@ -307,5 +307,9 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
 
 
     #TODO: Copy output to a final folder
+    output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file', 'r2_file']), name='output_node')
+    wf.connect(estimate, 's0_file
+    wf.connect(estimate, 't2star_file', output_node, 't2star_file')
+    wf.connect(estimate, 'r2_file', output_node, 'r2_file')
 
     return wf
