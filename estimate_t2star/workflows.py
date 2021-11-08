@@ -83,7 +83,7 @@ class EstimateMTR(base.BaseInterface):
 
         return outputs
 
-def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI', num_threads: int = 1) -> pe.Workflow:
+def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI', split_mton_flag = False, num_threads: int = 1) -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:
@@ -108,8 +108,9 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
                          name='input_node')
 
     #split_mton_flag = (input_node.inputs.mtoff_file is None)
-    split_mton_flag = False
-    print(split_mton_flag)
+    #split_mton_flag = False
+    #print(split_mton_flag)
+    
     mt_files = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file']), name='mt_files')
 
     if split_mton_flag:
