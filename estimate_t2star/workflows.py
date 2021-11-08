@@ -256,7 +256,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     affine_reg_to_target.inputs.sigma_units = ['vox', 'vox']
     affine_reg_to_target.inputs.shrink_factors = [[4, 2, 1], [4, 2, 1]]
     affine_reg_to_target.inputs.write_composite_transform = True
-    affine_reg_to_target.inputs.initial_moving_transform_com = 0
+    affine_reg_to_target.inputs.initial_moving_transform_com = 1
     affine_reg_to_target.inputs.output_warped_image = False
     wf.connect(select_first_t2star, 'out', affine_reg_to_target, 'moving_image')
     wf.connect(input_node, 'target_file', affine_reg_to_target, 'fixed_image')
@@ -267,7 +267,10 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     transform_echoes.inputs.input_image_type = 3
     wf.connect(input_node, 'target_file', transform_echoes, 'reference_image')
     wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
-    wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
+    if reorient is not None:
+        wf.connect(reorient_to_target, 'out_file', transform_echoes, 'input_image')
+    else:
+        wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
 
     # Estimate T2Star
     estimate = pe.Node(EstimateT2Star(), name='estimate_t2star')
