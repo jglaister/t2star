@@ -107,7 +107,8 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
                                                 mandatory_inputs=False),
                          name='input_node')
 
-    split_mton_flag = (input_node.inputs.mtoff_file is None)
+    #split_mton_flag = (input_node.inputs.mtoff_file is None)
+    split_mton_flag = False
     print(split_mton_flag)
     mt_files = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file']), name='mt_files')
 
