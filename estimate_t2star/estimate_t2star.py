@@ -103,7 +103,7 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     data = np.zeros(data_e1.shape[0:3] + (num_echos,))
     print(data.shape)
     data_shape = data.shape
-    data[:, :, :, 0] = data_e1
+    data[:, :, :, 0] = np.squeeze(data_e1)
 
     # Load remaining echos
     for idx, f in enumerate(t2star_files[1:]):
