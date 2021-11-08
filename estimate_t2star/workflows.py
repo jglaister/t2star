@@ -114,8 +114,8 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     def identity(mton_files, mtoff_files):
         return mton_filed, mtoff_filed
 
-    mtfile_node = pe.Node(util.Function(input_names=["mton_files", "mtoff_files"], output_names=["mton_filed", "mtoff_filed"], function=identity), name='mtfile_node')
-
+    #mtfile_node = pe.Node(util.Function(input_names=["mton_files", "mtoff_files"], output_names=["mton_filed", "mtoff_filed"], function=identity), name='mtfile_node')
+    mtfile_node = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mtfile_node')
     #if split_mton_flag:
     #    split_mt = pe.Node(fsl.Split(), 'split_mt')
     #    split_mt.inputs.dimension = 't'
@@ -132,8 +132,8 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #    wf.connect(input_node, 'mton_file ', mt_files, 'mton_file')
     #    wf.connect(input_node, 'mtoff_file ', mt_files, 'mtoff_file')
 
-    wf.connect(input_node, 'mton_file', mtfile_node, 'mton_files')
-    wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_files')
+    wf.connect(input_node, 'mton_file', mtfile_node, 'mton_file')
+    wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_file')
 
     # Reorient
     if reorient is not None:
