@@ -47,8 +47,8 @@ class EstimateT2Star(base.BaseInterface):
         return outputs
 
 class EstimateMTRInputSpec(base.BaseInterfaceInputSpec):
-    mton_file = base.traits.List(base.File(exists=True, desc='input image', mandatory=True))
-    mtoff_file = base.traits.List(base.File(exists=True, desc='input image', mandatory=True))
+    mton_file = base.File(exists=True, desc='input image', mandatory=True)
+    mtoff_file = base.File(exists=True, desc='input image', mandatory=True)
     brainmask_file = base.File(exists=True, desc='input image', mandatory=True)
 
 
@@ -108,7 +108,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
                          name='input_node')
 
     split_mton_flag = (input_node.inputs.mtoff_file is None)
-
+    print(split_mton_flag)
     mt_files = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file']), name='mt_files')
 
     if split_mton_flag:
