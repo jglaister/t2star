@@ -272,7 +272,25 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     else:
         wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
 
+    # Transform brainmask
+    transform_brainmask = pe.Node(ants.ApplyTransforms(), name='transform_brainmask')
+    transform_brainmask.inputs.input_image_type = 3
+    transform_brainmask.inputs.invert_transform_flags = True
+    wf.connect(input_node, 'brainmask_file', transform_brainmask, 'input_image')
+    wf.connect(select_first_t2star, 'out', transform_brainmask, 'reference_image')
+    wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
+
     # Estimate T2Star
+    #estimate = pe.Node(EstimateT2Star(), name='estimate_t2star')
+    #estimate.interface.num_threads = num_threads
+    #estimate.inputs.te_list = te
+    #if patient_id is not None and scan_id is not None:
+    #    estimate.inputs.output_prefix = patient_id + '_' + scan_id
+    #else:
+    #    estimate.inputs.output_prefix = fip.split_filename(select_first_t2star.outputs.out1)[1]
+    #wf.connect(transform_echoes, 'output_image', estimate, 't2star_files')
+    #wf.connect(input_node, 'brainmask_file', estimate, 'brainmask_file')
+
     estimate = pe.Node(EstimateT2Star(), name='estimate_t2star')
     estimate.interface.num_threads = num_threads
     estimate.inputs.te_list = te
@@ -280,8 +298,13 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
         estimate.inputs.output_prefix = patient_id + '_' + scan_id
     else:
         estimate.inputs.output_prefix = fip.split_filename(select_first_t2star.outputs.out1)[1]
-    wf.connect(transform_echoes, 'output_image', estimate, 't2star_files')
-    wf.connect(input_node, 'brainmask_file', estimate, 'brainmask_file')
+
+    if reorient is not None:
+        wf.connect(reorient_to_target, 'out_file', estimate, 't2star_files')
+    else:
+        wf.connect(input_node, 't2star_files', estimate, 't2star_files')
+    wf.connect(transform_brainmask, 'output_image', estimate, 'brainmask_file')
+
 
     #TODO: Copy output to a final folder
 
