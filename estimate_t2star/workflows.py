@@ -112,7 +112,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #print(split_mton_flag)
 
     mton_node = pe.Node(util.IdentityInterface(fields=['mton_file'], mandatory_inputs=False), name='mton_node')
-    mtoff_node = pe.Node(util.IdentityInterface(fields=['mtoff_file'], mandatory_inputs=False), name='mton_node')
+    mtoff_node = pe.Node(util.IdentityInterface(fields=['mtoff_file'], mandatory_inputs=False), name='mtoff_node')
 
 
     #if split_mton_flag:
