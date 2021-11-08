@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     #Find scans
     t2star_path = os.path.abspath(os.path.expanduser(args.t2star_prefix))
-    t2star_files = glob(t2star_path + '*.nii.gz')
+    t2star_files = sorted(glob(t2star_path + '*.nii.gz'))
     print(t2star_files)
 
     if len(t2star_files) is not len(args.te):
