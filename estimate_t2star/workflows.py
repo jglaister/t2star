@@ -227,7 +227,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
         wf.connect(input_node, 't2star_files', reorient_to_target, 'in_file')
 
     select_first_t2star = pe.Node(util.Select(), name='get_first_t2star')
-    select_first_t2star.inputs.index. = [1]
+    select_first_t2star.inputs.index = [1]
     #select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
     #select_first_t2star.inputs.squeeze = True
 
