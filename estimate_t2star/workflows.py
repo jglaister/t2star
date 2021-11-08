@@ -111,7 +111,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #split_mton_flag = False
     #print(split_mton_flag)
 
-    #mt_files = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mt_files')
+    mtfile_node = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mtfile_node')
 
     #if split_mton_flag:
     #    split_mt = pe.Node(fsl.Split(), 'split_mt')
@@ -128,6 +128,9 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #else:
     #    wf.connect(input_node, 'mton_file ', mt_files, 'mton_file')
     #    wf.connect(input_node, 'mtoff_file ', mt_files, 'mtoff_file')
+    
+    wf.connect(input_node, 'mton_file ', mtfile_node, 'mton_file')
+    wf.connect(input_node, 'mtoff_file ', mtfile_node, 'mtoff_file')
 
     # Reorient
     if reorient is not None:
