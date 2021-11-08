@@ -111,33 +111,33 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #split_mton_flag = False
     #print(split_mton_flag)
 
-    mt_files = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mt_files')
+    #mt_files = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mt_files')
 
-    if split_mton_flag:
-        split_mt = pe.Node(fsl.Split(), 'split_mt')
-        split_mt.inputs.dimension = 't'
-        wf.connect(input_node, 'mton_file', split_mt, 'in_file')
-
-        split_mt_files = pe.Node(util.Split(), 'split_mt_files')
-        split_mt_files.inputs.splits = [1,1]
-        split_mt_files.inputs.squeeze = True
-        wf.connect(split_mt, 'out_files ', split_mt_files, 'inlist')
-
-        wf.connect(split_mt, 'out1 ', mt_files, 'mton_file') #TODO: Check if MTON is first
-        wf.connect(split_mt, 'out2 ', mt_files, 'mtoff_file')
-    else:
-        wf.connect(input_node, 'mton_file ', mt_files, 'mton_file')
-        wf.connect(input_node, 'mtoff_file ', mt_files, 'mtoff_file')
+    #if split_mton_flag:
+    #    split_mt = pe.Node(fsl.Split(), 'split_mt')
+    #    split_mt.inputs.dimension = 't'
+    #    wf.connect(input_node, 'mton_file', split_mt, 'in_file')
+    #
+    #    split_mt_files = pe.Node(util.Split(), 'split_mt_files')
+    #    split_mt_files.inputs.splits = [1,1]
+    #    split_mt_files.inputs.squeeze = True
+    #    wf.connect(split_mt, 'out_files ', split_mt_files, 'inlist')
+    #
+    #    wf.connect(split_mt, 'out1 ', mt_files, 'mton_file') #TODO: Check if MTON is first
+    #    wf.connect(split_mt, 'out2 ', mt_files, 'mtoff_file')
+    #else:
+    #    wf.connect(input_node, 'mton_file ', mt_files, 'mton_file')
+    #    wf.connect(input_node, 'mtoff_file ', mt_files, 'mtoff_file')
 
     # Reorient
     if reorient is not None:
         reorient_mton_to_target = pe.Node(image.Reorient(), iterfield=['in_file'], name='reorient_mton_to_target')
         reorient_mton_to_target.inputs.orientation = reorient
-        wf.connect(mt_files, 'mton_file', reorient_mton_to_target, 'in_file')
+        wf.connect(input_node, 'mton_file', reorient_mton_to_target, 'in_file')
 
         reorient_mtoff_to_target = pe.Node(image.Reorient(), iterfield=['in_file'], name='reorient_mtoff_to_target')
         reorient_mtoff_to_target.inputs.orientation = reorient
-        wf.connect(mt_files, 'mtoff_file', reorient_mtoff_to_target, 'in_file')
+        wf.connect(input_node, 'mtoff_file', reorient_mtoff_to_target, 'in_file')
 
     #select_first_t2star = pe.Node(util.Split(), name='get_first_t2star')
     #select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
@@ -172,7 +172,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     if reorient is not None:
         wf.connect(reorient_mtoff_to_target, 'out_file', affine_reg_to_target, 'moving_image')
     else:
-        wf.connect(mt_files, 'mtoff_file', affine_reg_to_target, 'moving_image')
+        wf.connect(input_node, 'mtoff_file', affine_reg_to_target, 'moving_image')
 
     transform_mton = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_mton')
     transform_mton.inputs.input_image_type = 3
@@ -181,7 +181,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     if reorient is not None:
         wf.connect(reorient_mton_to_target, 'out_file', transform_mton, 'input_image')
     else:
-        wf.connect(mt_files, 'mton_file', transform_mton, 'input_image')
+        wf.connect(input_node, 'mton_file', transform_mton, 'input_image')
 
     estimate = pe.Node(EstimateMTR(), name='estimate_mtr')
     wf.connect(transform_mton, 'output_image', estimate, 'mton_file')
