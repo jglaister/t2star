@@ -174,7 +174,6 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     else:
         wf.connect(mt_files, 'mtoff_file', affine_reg_to_target, 'moving_image')
 
-    # Register first t2star file
     transform_mton = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_mton')
     transform_mton.inputs.input_image_type = 3
     wf.connect(input_node, 'target_file', transform_mton, 'reference_image')

@@ -75,7 +75,7 @@ def fit_nls_by_multiprocessing(data, s0, t2, te, workers):
     return s0_final, inv_t2_final, r2_final
 
 
-def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(), output_prefix='EstT2star_', num_workers=1):
+def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=None, output_prefix='EstT2star_', num_workers=1):
     '''
     estimate_t2star - Load multiecho t2star files and estimate t2star
     :param t2star_files: List of paths to t2star files
@@ -167,6 +167,9 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     r2 = np.zeros(np.prod(data_shape[0:3]))
     r2[bm_flat == 1] = r2_mask
     r2 = r2.reshape(data_shape[0:3])
+    
+    if output_dir is None:
+        output_dir = ''
 
     file_s0 = os.path.join(output_dir, output_prefix + '_S0.nii.gz')
     file_t2 = os.path.join(output_dir, output_prefix + '_T2star.nii.gz')
