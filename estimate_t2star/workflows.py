@@ -214,10 +214,11 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     wf = pe.Workflow(name, scan_directory)
 
     input_node = pe.Node(util.IdentityInterface(['t2star_files', 'target_file', 'brainmask_file']), name='input_node')
-    print(input_node)
-    num_t2star_files = len(input_node.outputs.t2star_files)
-    print(num_t2star_files)
-    print(input_node.outputs.t2star_files)
+    
+    #print(input_node)
+    #num_t2star_files = len(input_node.outputs.t2star_files)
+    #print(num_t2star_files)
+    #print(input_node.outputs.t2star_files)
         
     # Reorient
     if reorient is not None:
@@ -225,9 +226,10 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
         reorient_to_target.inputs.orientation = reorient
         wf.connect(input_node, 't2star_files', reorient_to_target, 'in_file')
 
-    select_first_t2star = pe.Node(util.Split(), name='get_first_t2star')
-    select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
-    select_first_t2star.inputs.squeeze = True
+    select_first_t2star = pe.Node(util.Select(), name='get_first_t2star')
+    select_first_t2star.inputs.index. = [1]
+    #select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
+    #select_first_t2star.inputs.squeeze = True
 
     if reorient is not None:
         wf.connect(reorient_to_target, 'out_file', select_first_t2star, 'inlist')
