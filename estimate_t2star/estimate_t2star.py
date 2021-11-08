@@ -38,7 +38,7 @@ def fit_nls(data, s0, t2, te):
                             method='trf',
                             x_scale=scale,
                             max_nfev=20,
-                            loss='soft_l1',
+                            #loss='soft_l1',
                             args=(data[i, :], te))
         s0_final[i] = nls.x[0]
         inv_t2_final[i] = nls.x[1]

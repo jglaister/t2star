@@ -33,8 +33,7 @@ if __name__ == '__main__':
         if getattr(args, argname) is not None:
             setattr(args, argname, os.path.abspath(os.path.expanduser(getattr(args, argname))))
 
-    wf = create_mtr_workflow(args.scan_directory, args.te, args.patient_id, args.scan_id, args.reorient,
-                                args.num_threads)
+    wf = create_mtr_workflow(args.scan_directory, args.patient_id, args.scan_id, args.reorient, args.num_threads)
 
     for argname in ['mton_file', 'mtoff_file', 'target_file', 'brainmask_file']:
         if getattr(args, argname) is not None:
