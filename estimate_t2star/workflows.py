@@ -5,6 +5,7 @@ import nipype.interfaces.ants as ants
 import nipype.interfaces.fsl as fsl
 import nipype.interfaces.utility as util
 import nipype.interfaces.image as image
+import nipype.interfaces.afni as afni
 
 import os.path
 
@@ -222,12 +223,12 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
         
     # Reorient
     if reorient is not None:
-        reorient_to_target = pe.MapNode(image.Reorient(), iterfield=['in_file'], name='reorient_to_target')
+        reorient_to_target = pe.MapNode(afni.Resample(), iterfield=['in_file'], name='reorient_to_target')
         reorient_to_target.inputs.orientation = reorient
         wf.connect(input_node, 't2star_files', reorient_to_target, 'in_file')
 
     select_first_t2star = pe.Node(util.Select(), name='get_first_t2star')
-    select_first_t2star.inputs.index = [1]
+    select_first_t2star.inputs.index = [0]
     #select_first_t2star.inputs.splits = [1, num_t2star_files - 1]
     #select_first_t2star.inputs.squeeze = True
 
