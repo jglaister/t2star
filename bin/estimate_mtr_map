@@ -41,9 +41,8 @@ if __name__ == '__main__':
 
     for argname in ['mton_file', 'mtoff_file', 'target_file', 'brainmask_file']:
         if getattr(args, argname) is not None:
-            print(args)
-            print(argname)
             setattr(wf.inputs.input_node, argname, getattr(args, argname))
+            print(getattr(wf.inputs.input_node, argname))
 
     if args.num_threads == 1:
         wf.run()
