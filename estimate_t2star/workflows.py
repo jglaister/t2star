@@ -12,8 +12,7 @@ import os.path
 import nipype.interfaces.base as base
 import nipype.utils.filemanip as fip
 
-
-from estimate_t2star import estimate_t2star
+from estimate_t2star.estimate_t2star import estimate_t2star
 
 
 class EstimateT2StarInputSpec(base.BaseInterfaceInputSpec):
@@ -238,6 +237,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     else:
         wf.connect(input_node, 't2star_files', select_first_t2star, 'inlist')
 
+    # Register first t2star file
     affine_reg_to_target = pe.Node(ants.Registration(), name='affine_reg_to_target')
     affine_reg_to_target.inputs.dimension = 3
     affine_reg_to_target.inputs.interpolation = 'Linear'
@@ -260,13 +260,14 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     wf.connect(select_first_t2star, 'out', affine_reg_to_target, 'moving_image')
     wf.connect(input_node, 'target_file', affine_reg_to_target, 'fixed_image')
 
-    # Register first t2star file
+    # Transform all echoes
     transform_echoes = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_echoes')
     transform_echoes.inputs.input_image_type = 3
     wf.connect(input_node, 'target_file', transform_echoes, 'reference_image')
     wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
     wf.connect(input_node, 't2star_files', transform_echoes, 'input_image')
 
+    # Estimate T2Star
     estimate = pe.Node(EstimateT2Star(), name='estimate_t2star')
     estimate.interface.num_threads = num_threads
     estimate.inputs.te_list = te
