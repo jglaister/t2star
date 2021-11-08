@@ -109,7 +109,7 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     for idx, f in enumerate(t2star_files[1:]):
         data[:, :, :, idx+1] = np.squeeze(nib.load(f).get_fdata()) # Offset by 1 since we start at element 1
 
-    bm = nib.load(brainmask_file).get_fdata()
+    bm = np.squeeze(nib.load(brainmask_file).get_fdata())
 
     #Stack echos
     #data_conc = np.stack((data_e1,data_e2,data_e3,data_e4,data_e5,data_e6,data_e7),axis=3)
@@ -149,10 +149,11 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     #    T2_ss_final[i] = nls.x[1]
     #S0_ss_final, T2_ss_final = fit_nls(data_flat_ss[0:10,:], S0_ss[0:10], T2_ss[0:10], TE)
     #scale = np.max(S0_ss)
-    if num_workers > 1:
-        s0_mask, t2inv_mask, r2_mask = fit_nls_by_multiprocessing(data_flat_mask, s0_mask, t2inv_mask, te, num_workers)
-    else:
-        s0_mask, t2inv_mask, r2_mask = fit_nls(data_flat_mask, s0_mask, t2inv_mask, te)
+
+    #if num_workers > 1:
+    #    s0_mask, t2inv_mask, r2_mask = fit_nls_by_multiprocessing(data_flat_mask, s0_mask, t2inv_mask, te, num_workers)
+    #else:
+    #    s0_mask, t2inv_mask, r2_mask = fit_nls(data_flat_mask, s0_mask, t2inv_mask, te)
 
     s0 = np.zeros(np.prod(data_shape[0:3]))
     s0[bm_flat == 1] = s0_mask
