@@ -163,15 +163,15 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     t2[bm_flat == 1] = 1/t2inv_mask
     t2 = t2.reshape(data_shape[0:3])
     
-    r2 = np.zeros(np.prod(data_shape[0:3]))
-    r2[bm_flat == 1] = r2_mask
-    r2 = r2.reshape(data_shape[0:3])
+    #r2 = np.zeros(np.prod(data_shape[0:3]))
+    #r2[bm_flat == 1] = r2_mask
+    #r2 = r2.reshape(data_shape[0:3])
 
     file_s0 = os.path.join(output_dir, output_prefix + '_GRE_S0.nii.gz')
     file_t2 = os.path.join(output_dir, output_prefix + '_GRE_T2star.nii.gz')
-    file_r2 = os.path.join(output_dir, output_prefix + '_GRE_R2.nii.gz')
+    #file_r2 = os.path.join(output_dir, output_prefix + '_GRE_R2.nii.gz')
 
     nib.Nifti1Image(s0, data_raw_e1.affine, data_raw_e1.header).to_filename(file_s0)
     nib.Nifti1Image(t2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_t2)
-    nib.Nifti1Image(r2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_r2)
+    #nib.Nifti1Image(r2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_r2)
 
