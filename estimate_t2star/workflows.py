@@ -68,8 +68,9 @@ class EstimateMTR(base.BaseInterface):
         mtoff_data = np.squeeze(mtoff_obj.get_fdata())  # .astype(np.float32)
         mton_data = np.squeeze(nib.load(self.inputs.mton_file).get_fdata())  # .astype(np.float32)
         bm_data = np.squeeze(nib.load(self.inputs.brainmask_file).get_fdata())  # .astype(np.float32)
-        mtr = (mtoff_data - mton_data) / mtoff_data
-        mtr = mtr * bm_data
+        mtr = np.zeros_like(mtoff_data)
+        mtr[bm_data] = (mtoff_data[bm_data] - mton_data[bm_data]) / mtoff_data[bm_data]
+        #mtr = mtr * bm_data
         mtr[mtr < 0] = 0
 
         out_name = fip.split_filename(self.inputs.mtoff_file)[1] + '_mtr.nii.gz'
