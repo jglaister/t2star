@@ -32,7 +32,6 @@ def fit_nls(data, s0, t2, te):
     r2_final = np.zeros_like(t2)
     scale = [np.max(s0), 50]
     for i in range(len(s0)):
-        print(i)
         nls = least_squares(_fun_exp,
                             (s0[i], t2[i]),
                             bounds=([0, 0.1], [np.inf, np.inf]),
