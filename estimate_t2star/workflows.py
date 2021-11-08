@@ -110,7 +110,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #split_mton_flag = (input_node.inputs.mtoff_file is None)
     #split_mton_flag = False
     #print(split_mton_flag)
-    
+
     mt_files = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file']), name='mt_files')
 
     if split_mton_flag:
@@ -118,7 +118,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
         split_mt.inputs.dimension = 't'
         wf.connect(input_node, 'mton_file', split_mt, 'in_file')
 
-        split_mt_files = pe.Node(util.Split(), 'split_mt_files')
+        split_mt_files = pe.Node(fsl.Split(), 'split_mt_files')
         split_mt_files.inputs.splits = [1,1]
         split_mt_files.inputs.squeeze = True
         wf.connect(split_mt, 'out_files ', split_mt_files, 'inlist')
