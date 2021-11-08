@@ -67,7 +67,7 @@ class EstimateMTR(base.BaseInterface):
         mtoff_obj = nib.load(self.inputs.mtoff_file)
         mtoff_data = mtoff_obj.get_fdata()  # .astype(np.float32)
         mton_data = nib.load(self.inputs.mton_file).get_fdata()  # .astype(np.float32)
-        bm_data = nib.load(self.inputs.bm_file).get_fdata()  # .astype(np.float32)
+        bm_data = nib.load(self.inputs.brainmask_file).get_fdata()  # .astype(np.float32)
         mtr = (mtoff_data - mton_data) / mtoff_data
         mtr = mtr * bm_data
         mtr[mtr < 0] = 0
