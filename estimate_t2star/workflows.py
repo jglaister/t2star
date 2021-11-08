@@ -33,7 +33,8 @@ class EstimateT2Star(base.BaseInterface):
     output_spec = EstimateT2StarOutputSpec
 
     def _run_interface(self, runtime):
-        estimate_t2star(self.inputs.t2star_files, self.inputs.brainmask_file, self.inputs.te_list, self.inputs.output_prefix, self.num_threads)
+        estimate_t2star(self.inputs.t2star_files, self.inputs.brainmask_file, self.inputs.te_list, 
+                        output_prefix=self.inputs.output_prefix, num_workers=self.num_threads)
 
         return runtime
 

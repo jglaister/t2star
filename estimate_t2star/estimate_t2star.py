@@ -150,10 +150,10 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     #S0_ss_final, T2_ss_final = fit_nls(data_flat_ss[0:10,:], S0_ss[0:10], T2_ss[0:10], TE)
     #scale = np.max(S0_ss)
 
-    #if num_workers > 1:
-    #    s0_mask, t2inv_mask, r2_mask = fit_nls_by_multiprocessing(data_flat_mask, s0_mask, t2inv_mask, te, num_workers)
-    #else:
-    #    s0_mask, t2inv_mask, r2_mask = fit_nls(data_flat_mask, s0_mask, t2inv_mask, te)
+    if num_workers > 1:
+        s0_mask, t2inv_mask, r2_mask = fit_nls_by_multiprocessing(data_flat_mask, s0_mask, t2inv_mask, te, num_workers)
+    else:
+        s0_mask, t2inv_mask, r2_mask = fit_nls(data_flat_mask, s0_mask, t2inv_mask, te)
 
     s0 = np.zeros(np.prod(data_shape[0:3]))
     s0[bm_flat == 1] = s0_mask
@@ -163,15 +163,15 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     t2[bm_flat == 1] = 1/t2inv_mask
     t2 = t2.reshape(data_shape[0:3])
     
-    #r2 = np.zeros(np.prod(data_shape[0:3]))
-    #r2[bm_flat == 1] = r2_mask
-    #r2 = r2.reshape(data_shape[0:3])
+    r2 = np.zeros(np.prod(data_shape[0:3]))
+    r2[bm_flat == 1] = r2_mask
+    r2 = r2.reshape(data_shape[0:3])
 
     file_s0 = os.path.join(output_dir, output_prefix + '_GRE_S0.nii.gz')
     file_t2 = os.path.join(output_dir, output_prefix + '_GRE_T2star.nii.gz')
-    #file_r2 = os.path.join(output_dir, output_prefix + '_GRE_R2.nii.gz')
+    file_r2 = os.path.join(output_dir, output_prefix + '_GRE_R2.nii.gz')
 
     nib.Nifti1Image(s0, data_raw_e1.affine, data_raw_e1.header).to_filename(file_s0)
     nib.Nifti1Image(t2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_t2)
-    #nib.Nifti1Image(r2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_r2)
+    nib.Nifti1Image(r2, data_raw_e1.affine, data_raw_e1.header).to_filename(file_r2)
 
