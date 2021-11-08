@@ -259,7 +259,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     affine_reg_to_target.inputs.output_warped_image = False
     wf.connect(select_first_t2star, 'out', affine_reg_to_target, 'moving_image')
     wf.connect(input_node, 'target_file', affine_reg_to_target, 'fixed_image')
-    wf.connect(input_node, 'brainmask_file', affine_reg_to_target, 'fixed_image_mask')
+    #wf.connect(input_node, 'brainmask_file', affine_reg_to_target, 'fixed_image_mask')
 
     # Transform all echoes
     transform_echoes = pe.MapNode(ants.ApplyTransforms(), iterfield=['input_image'], name='transform_echoes')
