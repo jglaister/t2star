@@ -242,14 +242,11 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     affine_reg_to_target = pe.Node(ants.Registration(), name='affine_reg_to_target')
     affine_reg_to_target.inputs.dimension = 3
     affine_reg_to_target.inputs.interpolation = 'Linear'
-    #affine_reg_to_target.inputs.metric = ['MI', 'MI']
-    #affine_reg_to_target.inputs.metric_weight = [1.0, 1.0]
-    #affine_reg_to_target.inputs.radius_or_number_of_bins = [32, 32]
-    affine_reg_to_target.inputs.metric = ['CC', 'CC']
+    affine_reg_to_target.inputs.metric = ['MI', 'MI']
     affine_reg_to_target.inputs.metric_weight = [1.0, 1.0]
-    affine_reg_to_target.inputs.radius_or_number_of_bins = [2, 2]
+    affine_reg_to_target.inputs.radius_or_number_of_bins = [32, 32]
     affine_reg_to_target.inputs.sampling_strategy = ['Regular', 'Regular']
-    affine_reg_to_target.inputs.sampling_percentage = [0.25, 0.25]
+    affine_reg_to_target.inputs.sampling_percentage = [0.5, 0.5]
     affine_reg_to_target.inputs.transforms = ['Rigid', 'Affine']
     affine_reg_to_target.inputs.transform_parameters = [(0.1,), (0.1,)]
     affine_reg_to_target.inputs.number_of_iterations = [[100, 50, 25], [100, 50, 25]]
