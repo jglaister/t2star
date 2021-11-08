@@ -35,7 +35,7 @@ def fit_nls(data, s0, t2, te):
         print(i)
         nls = least_squares(_fun_exp,
                             (s0[i], t2[i]),
-                            bounds=([0, 0.1], [np.inf, np.inf]),
+                            bounds=([0, 0.2], [np.inf, np.inf]),
                             method='trf',
                             x_scale=scale,
                             max_nfev=20,
