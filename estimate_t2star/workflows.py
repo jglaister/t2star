@@ -225,6 +225,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     if reorient is not None:
         reorient_to_target = pe.MapNode(afni.Resample(), iterfield=['in_file'], name='reorient_to_target')
         reorient_to_target.inputs.orientation = reorient
+        reorient_to_target.inputs.outputtype = 'NIFTI_GZ'
         wf.connect(input_node, 't2star_files', reorient_to_target, 'in_file')
 
     select_first_t2star = pe.Node(util.Select(), name='get_first_t2star')
