@@ -255,7 +255,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     affine_reg_to_target.inputs.sigma_units = ['vox', 'vox']
     affine_reg_to_target.inputs.shrink_factors = [[4, 2, 1], [4, 2, 1]]
     affine_reg_to_target.inputs.write_composite_transform = True
-    affine_reg_to_target.inputs.initial_moving_transform_com = 1
+    affine_reg_to_target.inputs.initial_moving_transform_com = 0
     affine_reg_to_target.inputs.output_warped_image = False
     wf.connect(select_first_t2star, 'out', affine_reg_to_target, 'moving_image')
     wf.connect(input_node, 'target_file', affine_reg_to_target, 'fixed_image')
