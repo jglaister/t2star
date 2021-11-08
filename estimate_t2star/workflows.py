@@ -317,7 +317,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     wf.connect(input_node, 'target_file', transform_t2star, 'reference_image')
     wf.connect(affine_reg_to_target, 'composite_transform', transform_t2star, 'transforms')
 
-    transform_s0 = pe.Node(ants.ApplyTransforms(), name='transform_t2star')
+    transform_s0 = pe.Node(ants.ApplyTransforms(), name='transform_s0')
     transform_s0.inputs.input_image_type = 3
     wf.connect(estimate, 's0_file', transform_s0, 'input_image')
     wf.connect(input_node, 'target_file', transform_s0, 'reference_image')
