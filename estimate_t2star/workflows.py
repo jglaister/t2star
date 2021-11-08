@@ -132,8 +132,8 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #    wf.connect(input_node, 'mton_file ', mt_files, 'mton_file')
     #    wf.connect(input_node, 'mtoff_file ', mt_files, 'mtoff_file')
 
-    wf.connect(input_node, 'mton_file ', mtfile_node, 'mton_files')
-    wf.connect(input_node, 'mtoff_file ', mtfile_node, 'mtoff_files')
+    wf.connect(input_node, 'mton_file', mtfile_node, 'mton_files')
+    wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_files')
 
     # Reorient
     if reorient is not None:
