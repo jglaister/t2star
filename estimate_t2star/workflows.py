@@ -103,7 +103,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
 
     wf = pe.Workflow(name, scan_directory)
 
-    input_node = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file', 'target_file', 'brainmask_file'],
+    input_node = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file', 'target_file', 'brainmask_file'],
                                                 mandatory_inputs=False),
                          name='input_node')
 
@@ -111,14 +111,14 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     #split_mton_flag = False
     #print(split_mton_flag)
 
-    mt_files = pe.Node(util.IdentityInterface(['mton_file', 'mtoff_file']), name='mt_files')
+    mt_files = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mt_files')
 
     if split_mton_flag:
         split_mt = pe.Node(fsl.Split(), 'split_mt')
         split_mt.inputs.dimension = 't'
         wf.connect(input_node, 'mton_file', split_mt, 'in_file')
 
-        split_mt_files = pe.Node(fsl.Split(), 'split_mt_files')
+        split_mt_files = pe.Node(util.Split(), 'split_mt_files')
         split_mt_files.inputs.splits = [1,1]
         split_mt_files.inputs.squeeze = True
         wf.connect(split_mt, 'out_files ', split_mt_files, 'inlist')
