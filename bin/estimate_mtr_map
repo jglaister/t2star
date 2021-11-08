@@ -24,8 +24,6 @@ if __name__ == '__main__':
     #t2star_files = sorted(glob(t2star_path + '*.nii.gz'))
     #print(t2star_files)
 
-    create_mtr_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI') -> pe.Workflow:
-
     #if len(t2star_files) is not len(args.te):
     #    raise ValueError('Number of t2star scans and length of TE list should be same')
 
