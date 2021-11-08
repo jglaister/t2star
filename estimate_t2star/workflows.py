@@ -278,7 +278,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     transform_brainmask.inputs.invert_transform_flags = True
     wf.connect(input_node, 'brainmask_file', transform_brainmask, 'input_image')
     wf.connect(select_first_t2star, 'out', transform_brainmask, 'reference_image')
-    wf.connect(affine_reg_to_target, 'composite_transform', transform_echoes, 'transforms')
+    wf.connect(affine_reg_to_target, 'composite_transform', transform_brainmask, 'transforms')
 
     # Estimate T2Star
     #estimate = pe.Node(EstimateT2Star(), name='estimate_t2star')
