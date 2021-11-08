@@ -308,7 +308,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
 
     #TODO: Copy output to a final folder
     output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file', 'r2_file']), name='output_node')
-    wf.connect(estimate, 's0_file
+    wf.connect(estimate, 's0_file', output_node, 't2star_file')
     wf.connect(estimate, 't2star_file', output_node, 't2star_file')
     wf.connect(estimate, 'r2_file', output_node, 'r2_file')
 
