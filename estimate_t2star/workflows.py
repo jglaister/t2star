@@ -87,7 +87,6 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     '''
     Registers and estimates t2star map
     :param scan_directory:
-    :param te:
     :param patient_id:
     :param scan_id:
     :param reorient:
