@@ -82,7 +82,7 @@ class EstimateMTR(base.BaseInterface):
 
         return outputs
 
-def create_mtr_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI') -> pe.Workflow:
+def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI') -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:

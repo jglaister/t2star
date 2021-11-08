@@ -91,8 +91,8 @@ def estimate_t2star(t2star_files, brainmask_file, te_list, output_dir=os.getcwd(
     :type num_workers: int
     :return:
     '''
-    num_echos = t2star_files.len()
-    if te_list.len() is not num_echos:
+    num_echos = len(t2star_files)
+    if len(te_list) is not num_echos:
         raise ValueError('Length of TE and number of t2star files should be equal.')
 
     # Load first echo to get image size and header info
