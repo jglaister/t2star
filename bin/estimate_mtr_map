@@ -16,6 +16,7 @@ if __name__ == '__main__':
     parser.add_argument('-bm', '--brainmask-file', type=str, required=True)
     parser.add_argument('--reorient', choices=[None, 'RAS', 'LAS', 'RPS', 'LPS', 'RAI', 'LAI', 'RPI', 'LPI'], 
                         default='RAI', help='Reorient T2 images to specified orientation before registering')
+    parser.add_argument('--use-iacl-struct', action='store_true', default=False)
     parser.add_argument('-t', '--num_threads', type=int, default=1)
     args = parser.parse_args()
 
@@ -26,6 +27,9 @@ if __name__ == '__main__':
 
     #if len(t2star_files) is not len(args.te):
     #    raise ValueError('Number of t2star scans and length of TE list should be same')
+    
+    if args.use_iacl_struct and args.patient_id is None and args.scan_id is None:
+        raise ValueError('Need to provide a patient_id and scan_id to use the IACL folder structure')
 
     for argname in ['mton_file', 'mtoff_file', 'target_file', 'brainmask_file']:
         if getattr(args, argname) is not None:

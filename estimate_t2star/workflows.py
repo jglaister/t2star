@@ -84,7 +84,7 @@ class EstimateMTR(base.BaseInterface):
 
         return outputs
 
-def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI', split_mton_flag = False, num_threads: int = 1) -> pe.Workflow:
+def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: str = None, reorient: str = 'RAI', split_mton_flag = False, use_iacl_struct = False) -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:
@@ -108,14 +108,6 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
                                                 mandatory_inputs=False),
                          name='input_node')
 
-    #split_mton_flag = (input_node.inputs.mtoff_file is None)
-    #split_mton_flag = False
-    #print(split_mton_flag)
-
-    def identity(mton_files, mtoff_files):
-        return mton_filed, mtoff_filed
-
-    #mtfile_node = pe.Node(util.Function(input_names=["mton_files", "mtoff_files"], output_names=["mton_filed", "mtoff_filed"], function=identity), name='mtfile_node')
     mtfile_node = pe.Node(util.IdentityInterface(fields=['mton_file', 'mtoff_file']), name='mtfile_node')
     
     if split_mton_flag:
@@ -197,11 +189,26 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     wf.connect(input_node, 'brainmask_file', estimate, 'brainmask_file')
 
     #TODO: Copy output to a final folder
+    # Set up base filename for copying outputs
+    if use_iacl_struct:
+        out_file_base = os.path.join(scan_directory, patient_id, scan_id, patient_id + '_' + scan_id)
+    else:
+        if patient_id is not None:
+            out_file_base = patient_id + '_' + scan_id if scan_id is not None else patient_id
+        else:
+            out_file_base = 'out'
+        out_file_base = os.path.join(scan_directory, out_file_base)
+    
+    export_mtr = pe.Node(io.ExportFile(), name='export_mtr')
+    export_mtr.inputs.check_extension = True
+    export_mtr.inputs.clobber = True
+    export_mtr.inputs.out_file = out_file_base + '_MTR.nii.gz'
+    wf.connect(estimate, 'mtr_file', export_mtr, 'in_file')
 
     return wf
 
 def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAS',
-                           num_threads: int = 1) -> pe.Workflow:
+                           num_threads: int = 1, use_iacl_struct = False) -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:
@@ -328,5 +335,27 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file']), name='output_node')
     wf.connect(transform_s0, 'output_image', output_node, 's0_file')
     wf.connect(transform_t2star, 'output_image', output_node, 't2star_file')
+
+    # Set up base filename for copying outputs
+    if use_iacl_struct:
+        out_file_base = os.path.join(scan_directory, patient_id, scan_id, patient_id + '_' + scan_id)
+    else:
+        if patient_id is not None:
+            out_file_base = patient_id + '_' + scan_id if scan_id is not None else patient_id
+        else:
+            out_file_base = 'out'
+        out_file_base = os.path.join(scan_directory, out_file_base)
+    
+    export_t2star = pe.Node(io.ExportFile(), name='export_t2star')
+    export_t2star.inputs.check_extension = True
+    export_t2star.inputs.clobber = True
+    export_t2star.inputs.out_file = out_file_base + '_GRE_t2star.nii.gz'
+    wf.connect(transform_t2star, 'output_image', export_t2star, 'in_file')
+
+    export_s0 = pe.Node(io.ExportFile(), name='export_s0')
+    export_s0.inputs.check_extension = True
+    export_s0.inputs.clobber = True
+    export_s0.inputs.out_file = out_file_base + '_GRE_s0.nii.gz'
+    wf.connect(transform_s0, 'output_image', export_s0, 'in_file')
 
     return wf
