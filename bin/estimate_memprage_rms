@@ -1,0 +1,34 @@
+#! /usr/bin/env python
+import argparse
+import os
+from glob import glob
+
+import numpy as np
+import nibabel as nib
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--file-dir', type=str, default=os.getcwd())
+    parser.add_argument('--memprage-prefix', type=str)
+    # parser.add_argument('--reorient', choices=[None, 'RAS', 'LAS', 'RPS', 'LPS', 'RAI', 'LAI', 'RPI', 'LPI'], 
+    #                    default='RAI', help='Reorient T2 images to specified orientation before registering')
+    args = parser.parse_args()
+
+    #Find scans
+    args.file_dir = os.path.abspath(os.path.expanduser(args.file_dir))
+    memprage_path = os.path.join(args.file_dir,args.memprage_prefix + '*.nii.gz')
+    memprage_files = sorted(glob(memprage_path + '*.nii.gz'))
+    print(memprage_files)
+
+    memprage_echo1_obj = nib.load(memprage_files[0])
+    memprage_echo1 = memprage_echo1_obj.get_fdata()
+    memprage_rms = memprage_echo1 ** 2
+
+    for memprage_file in memprage_files[1:]:
+        memprage_echo = nib.load(memprage_file).get_fdata()
+        memprage_rms = memprage_rms + memprage_echo ** 2
+
+    memprage_rms = np.sqrt(memprage_rms / len(memprage_files))
+
+    output_filename = os.path.join(args.file_dir,args.memprage_prefix + '_RMS.nii.gz')
+    nib.Nifti1Image(memprage_rms, memprage_echo1_obj.affine, memprage_echo1_obj.header).to_filename(output_filename)
