@@ -17,7 +17,8 @@ if __name__ == '__main__':
     #Find scans
     args.file_dir = os.path.abspath(os.path.expanduser(args.file_dir))
     memprage_path = os.path.join(args.file_dir,args.memprage_prefix + '*.nii.gz')
-    memprage_files = sorted(glob(memprage_path + '*.nii.gz'))
+    print(memprage_path)
+    memprage_files = sorted(glob(memprage_path))
     print(memprage_files)
 
     memprage_echo1_obj = nib.load(memprage_files[0])
