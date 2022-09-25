@@ -121,8 +121,8 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
         split_mt_files.inputs.squeeze = True
         wf.connect(split_mt, 'out_files', split_mt_files, 'inlist')
     
-        wf.connect(split_mt, 'out1', mtfile_node, 'mton_file') #TODO: Check if MTON is first
-        wf.connect(split_mt, 'out2', mtfile_node, 'mtoff_file')
+        wf.connect(split_mt_files, 'out1', mtfile_node, 'mton_file') #TODO: Check if MTON is first
+        wf.connect(split_mt_files, 'out2', mtfile_node, 'mtoff_file')
     else:
         wf.connect(input_node, 'mton_file', mtfile_node, 'mton_file')
         wf.connect(input_node, 'mtoff_file', mtfile_node, 'mtoff_file')
