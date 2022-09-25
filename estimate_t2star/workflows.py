@@ -6,6 +6,7 @@ import nipype.interfaces.fsl as fsl
 import nipype.interfaces.utility as util
 import nipype.interfaces.image as image
 import nipype.interfaces.afni as afni
+import nipype.interfaces.io as io
 
 import os.path
 

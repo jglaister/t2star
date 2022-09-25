@@ -11,7 +11,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--patient-id', type=str)
     parser.add_argument('-s', '--scan-id', type=str)
     parser.add_argument('-mton', '--mton-file', type=str, required=True)
-    parser.add_argument('-mtoff', '--mtoff-file', type=str, required=True)
+    parser.add_argument('-mtoff', '--mtoff-file', type=str)#, required=True)
     parser.add_argument('-tf', '--target-file', type=str, required=True)
     parser.add_argument('-bm', '--brainmask-file', type=str, required=True)
     parser.add_argument('--reorient', choices=[None, 'RAS', 'LAS', 'RPS', 'LPS', 'RAI', 'LAI', 'RPI', 'LPI'], 
