@@ -70,7 +70,7 @@ class EstimateMTR(base.BaseInterface):
         mton_data = np.squeeze(nib.load(self.inputs.mton_file).get_fdata())  # .astype(np.float32)
         bm_data = np.squeeze(nib.load(self.inputs.brainmask_file).get_fdata())  # .astype(np.float32)
         mtr = np.zeros_like(mtoff_data)
-        mtr[bm_data] = (mtoff_data[bm_data] - mton_data[bm_data]) / mtoff_data[bm_data]
+        mtr[bm_data==1] = (mtoff_data[bm_data==1] - mton_data[bm_data==1]) / mtoff_data[bm_data==1]
         #mtr = mtr * bm_data
         mtr[mtr < 0] = 0
 
