@@ -41,7 +41,7 @@ if __name__ == '__main__':
         print('No MT_OFF file. Assuming MT_ON contains both MT_OFF and MT_ON (in that order)')
 
 
-    wf = create_mtr_workflow(args.scan_directory, args.patient_id, args.scan_id, args.reorient, split_mton_flag, args.num_threads)
+    wf = create_mtr_workflow(args.scan_directory, args.patient_id, args.scan_id, args.reorient, split_mton_flag)
 
     for argname in ['mton_file', 'mtoff_file', 'target_file', 'brainmask_file']:
         if getattr(args, argname) is not None:
