@@ -209,7 +209,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     return wf
 
 def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAS',
-                           num_threads: int = 1, use_iacl_struct = False) -> pe.Workflow:
+                           num_threads: int = 1) -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:
@@ -223,10 +223,12 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     '''
 
     name = 't2_star'
-
+    
+    use_iacl_struct = False
     if patient_id is not None and scan_id is not None:
         scan_directory = os.path.join(scan_directory, patient_id, 'pipeline')
         name += '_' + scan_id
+        use_iacl_struct = True
 
     wf = pe.Workflow(name, scan_directory)
 
@@ -332,10 +334,18 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     wf.connect(input_node, 'target_file', transform_s0, 'reference_image')
     wf.connect(affine_reg_to_target, 'composite_transform', transform_s0, 'transforms')
 
+    transform_r2 = pe.Node(ants.ApplyTransforms(), name='transform_r2')
+    transform_r2.inputs.input_image_type = 3
+    wf.connect(estimate, 'r2_file', transform_r2, 'input_image')
+    wf.connect(input_node, 'target_file', transform_r2, 'reference_image')
+    wf.connect(affine_reg_to_target, 'composite_transform', transform_r2, 'transforms')
+
     #TODO: Copy output to a final folder
-    output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file']), name='output_node')
+    output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file', 'r2_file']), name='output_node')
     wf.connect(transform_s0, 'output_image', output_node, 's0_file')
     wf.connect(transform_t2star, 'output_image', output_node, 't2star_file')
+    wf.connect(transform_r2, 'output_image', output_node, 't2star_file')
+
 
     # Set up base filename for copying outputs
     if use_iacl_struct:
@@ -358,5 +368,11 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     export_s0.inputs.clobber = True
     export_s0.inputs.out_file = out_file_base + '_GRE_s0.nii.gz'
     wf.connect(transform_s0, 'output_image', export_s0, 'in_file')
+
+    export_r2 = pe.Node(io.ExportFile(), name='export_r2')
+    export_r2.inputs.check_extension = True
+    export_r2.inputs.clobber = True
+    export_r2.inputs.out_file = out_file_base + '_GRE_r2.nii.gz'
+    wf.connect(transform_r2, 'output_image', export_r2, 'in_file')
 
     return wf
