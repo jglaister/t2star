@@ -209,7 +209,7 @@ def create_mtr_workflow(scan_directory: str, patient_id: str = None, scan_id: st
     return wf
 
 def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan_id: str = None, reorient: str = 'RAS',
-                           num_threads: int = 1) -> pe.Workflow:
+                           num_threads: int = 1, use_iacl_struct: bool = False) -> pe.Workflow:
     '''
     Registers and estimates t2star map
     :param scan_directory:
@@ -224,11 +224,9 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
 
     name = 't2_star'
     
-    use_iacl_struct = False
     if patient_id is not None and scan_id is not None:
         scan_directory = os.path.join(scan_directory, patient_id, 'pipeline')
         name += '_' + scan_id
-        use_iacl_struct = True
 
     wf = pe.Workflow(name, scan_directory)
 
@@ -344,7 +342,7 @@ def create_t2star_workflow(scan_directory: str, te, patient_id: str = None, scan
     output_node = pe.Node(util.IdentityInterface(['s0_file', 't2star_file', 'r2_file']), name='output_node')
     wf.connect(transform_s0, 'output_image', output_node, 's0_file')
     wf.connect(transform_t2star, 'output_image', output_node, 't2star_file')
-    wf.connect(transform_r2, 'output_image', output_node, 't2star_file')
+    wf.connect(transform_r2, 'output_image', output_node, 'r2_file')
 
 
     # Set up base filename for copying outputs
